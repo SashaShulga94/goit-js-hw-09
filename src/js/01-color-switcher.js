@@ -11,19 +11,9 @@ startBtn.addEventListener('click', () => {
   currentClr = setInterval(() => {
     const color = getRandomHexColor();
     bodyColor.style.backgroundColor = color;
-  }, 1000);
+  }, 1500);
 });
 
-// startBtn.addEventListener('click', startChangeClr);
-// stopBtn.addEventListener('click', stopChangeClr);
-
-// const colorField = function startChangeClr(evt) {
-//   const color = getRandomHexColor();
-//   bodyColor.style.backgroundColor = color;
-//   console.dir(evt.currentTarget);
-// };
-
-// stopBtn.addEventListener('click', () => {
-//   clearInterval(timerId);
-//   console.log(`Interval with id ${timerId} has stopped!`);
-// });
+stopBtn.addEventListener('click', () => {
+  clearInterval(currentClr);
+});
