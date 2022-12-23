@@ -9,11 +9,12 @@ function getRandomHexColor() {
 }
 startBtn.addEventListener('click', () => {
   currentClr = setInterval(() => {
-    const color = getRandomHexColor();
-    bodyColor.style.backgroundColor = color;
-  }, 1500);
+    bodyColor.style.backgroundColor = getRandomHexColor();
+  }, 1000);
+  startBtn.disabled = true;
 });
 
 stopBtn.addEventListener('click', () => {
   clearInterval(currentClr);
+  startBtn.disabled = false;
 });
