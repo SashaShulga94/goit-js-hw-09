@@ -1,15 +1,29 @@
 import flatpickr from 'flatpickr';
-
 import 'flatpickr/dist/flatpickr.min.css';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+Notify.init({
+  position: 'center-top',
+  cssAnimationStyle: 'from-top',
+  fontAwesomeIconStyle: 'shadow',
+});
 
-// const inputRef = document.querySelector('#datetime-picker');
-const btnStart = document.querySelector('[data-start]');
-btnStart.addEventListener('click', onStartCountdown);
+const refs = {
+  startBtn: document.querySelector('[data-start]'),
+  days: document.querySelector('[data-days]'),
+  hours: document.querySelector('[data-hours]'),
+  minutes: document.querySelector('[data-minutes]'),
+  seconds: document.querySelector('[data-seconds]'),
+  timer: document.querySelector('.timer'),
+};
 
-let userDate = null;
+refs.startBtn.addEventListener('click', onStartBtnClick);
+// const inputRef = document.querySelector('input#datetime-picker');
+// const btnStart = document.querySelector('[data-start]');
+// btnStart.addEventListener('click', onStartCountdown);
+
 let intervalId = null;
+refs.startBtn.disabled = true;
 
-//   function flatpickr(selector, options)
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -17,26 +31,64 @@ const options = {
   minuteIncrement: 1,
 
   onClose(selectedDates) {
-    userDate = selectedDates[0];
-    if (userDate < Date.now()) {
-      window.alert('Please choose a date in the future');
+    const currentDate = Date.now();
+    const timeToDeadline = convertMs(selectedDates[0] - currentDate);
+
+    if (selectedDates[0] < currentDate) {
+      Notify.info('Please choose a date in the future');
+      return;
+    } else {
+      refs.startBtn.disabled = false;
+      initializeTimer(timeToDeadline);
     }
   },
 };
 
-function onStartCountdown() {
-  intervalId = setInterval(() => {
-    updateDate();
-  }, 1000);
+const flpick = flatpickr('#datetime-picker', options);
+
+function onStartBtnClick() {
+  updateTimer();
+  timerIntervalId = setInterval(updateTimer, 1000);
+
+  refs.startBtn.disabled = true;
+
+  // bgColorIntervalId = setInterval(() => {
+  //   refs.timer.style.backgroundColor = getRandomHexColor();
+  // }, 5000);
 }
 
-function updateDate() {
-  const deltaTime = userDate - Date.now();
+function initializeTimer({ days, hours, minutes, seconds }) {
+  refs.days.textContent = startFromZero(days);
+  refs.hours.textContent = startFromZero(hours);
+  refs.minutes.textContent = startFromZero(minutes);
+  refs.seconds.textContent = startFromZero(seconds);
+}
 
-  if (deltaTime < 0) {
+function updateTimer() {
+  const timeToDeeadline = flpick.selectedDates[0] - Date.now();
+  const { days, hours, minutes, seconds } = convertMs(timeToDeeadline);
+  refs.days.textContent = startFromZero(days);
+  refs.hours.textContent = startFromZero(hours);
+  refs.minutes.textContent = startFromZero(minutes);
+  refs.seconds.textContent = startFromZero(seconds);
+
+  if (days <= 0 && hours <= 0 && minutes <= 0 && seconds <= 0) {
+    clearInterval(timerIntervalId);
+    // clearInterval(bgColorIntervalId);
     return;
   }
 }
+
+function startFromZero(value) {
+  return value.toString().padStart(2, '0');
+}
+
+// function onStartCountdown() {
+//   intervalId = setInterval(() => {
+//     updateDate();
+//   }, 1000);
+// }
+
 //   function flatpickr(selector, options)
 
 function convertMs(ms) {
