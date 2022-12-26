@@ -1,11 +1,6 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-Notify.init({
-  position: 'center-top',
-  cssAnimationStyle: 'from-top',
-  fontAwesomeIconStyle: 'shadow',
-});
 
 const refs = {
   startBtn: document.querySelector('[data-start]'),
@@ -17,9 +12,6 @@ const refs = {
 };
 
 refs.startBtn.addEventListener('click', onStartBtnClick);
-// const inputRef = document.querySelector('input#datetime-picker');
-// const btnStart = document.querySelector('[data-start]');
-// btnStart.addEventListener('click', onStartCountdown);
 
 let intervalId = null;
 refs.startBtn.disabled = true;
@@ -51,10 +43,6 @@ function onStartBtnClick() {
   timerIntervalId = setInterval(updateTimer, 1000);
 
   refs.startBtn.disabled = true;
-
-  // bgColorIntervalId = setInterval(() => {
-  //   refs.timer.style.backgroundColor = getRandomHexColor();
-  // }, 5000);
 }
 
 function initializeTimer({ days, hours, minutes, seconds }) {
@@ -74,7 +62,7 @@ function updateTimer() {
 
   if (days <= 0 && hours <= 0 && minutes <= 0 && seconds <= 0) {
     clearInterval(timerIntervalId);
-    // clearInterval(bgColorIntervalId);
+
     return;
   }
 }
@@ -82,14 +70,6 @@ function updateTimer() {
 function startFromZero(value) {
   return value.toString().padStart(2, '0');
 }
-
-// function onStartCountdown() {
-//   intervalId = setInterval(() => {
-//     updateDate();
-//   }, 1000);
-// }
-
-//   function flatpickr(selector, options)
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
