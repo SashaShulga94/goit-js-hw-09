@@ -12,8 +12,6 @@ const refs = {
 };
 
 refs.startBtn.addEventListener('click', onStartBtnClick);
-
-let intervalId = null;
 refs.startBtn.disabled = true;
 
 const options = {
@@ -22,16 +20,12 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
 
-  onClose(selectedDates) {
-    const currentDate = Date.now();
-    const timeToDeadline = convertMs(selectedDates[0] - currentDate);
-
-    if (selectedDates[0] < currentDate) {
+  onClose([selectedDates]) {
+    if (selectedDates < Date.now()) {
+      btnStart.disabled = true;
       Notify.info('Please choose a date in the future');
-      return;
     } else {
       refs.startBtn.disabled = false;
-      initializeTimer(timeToDeadline);
     }
   },
 };
@@ -39,10 +33,16 @@ const options = {
 const flpick = flatpickr('#datetime-picker', options);
 
 function onStartBtnClick() {
-  updateTimer();
-  timerIntervalId = setInterval(updateTimer, 1000);
+  const timeInterval = setInterval(function () {
+    let timeToDeadline = flpick.selectedDates[0] - Date.now();
+    let msObject = convertMs(timeToDeadline);
 
-  refs.startBtn.disabled = true;
+    initializeTimer(msObject);
+
+    if (timeToDeadline < 1000) {
+      clearInterval(timeInterval);
+    }
+  }, 1000);
 }
 
 function initializeTimer({ days, hours, minutes, seconds }) {
@@ -50,21 +50,6 @@ function initializeTimer({ days, hours, minutes, seconds }) {
   refs.hours.textContent = startFromZero(hours);
   refs.minutes.textContent = startFromZero(minutes);
   refs.seconds.textContent = startFromZero(seconds);
-}
-
-function updateTimer() {
-  const timeToDeeadline = flpick.selectedDates[0] - Date.now();
-  const { days, hours, minutes, seconds } = convertMs(timeToDeeadline);
-  refs.days.textContent = startFromZero(days);
-  refs.hours.textContent = startFromZero(hours);
-  refs.minutes.textContent = startFromZero(minutes);
-  refs.seconds.textContent = startFromZero(seconds);
-
-  if (days <= 0 && hours <= 0 && minutes <= 0 && seconds <= 0) {
-    clearInterval(timerIntervalId);
-
-    return;
-  }
 }
 
 function startFromZero(value) {
